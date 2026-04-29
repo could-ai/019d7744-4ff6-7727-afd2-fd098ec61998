@@ -15,7 +15,99 @@ class ChatApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const ChatScreen(),
+      home: const ContactListScreen(),
+    );
+  }
+}
+
+class Contact {
+  final String id;
+  final String name;
+  final String lastMessage;
+  final String time;
+  final Color avatarColor;
+
+  Contact({
+    required this.id,
+    required this.name,
+    required this.lastMessage,
+    required this.time,
+    required this.avatarColor,
+  });
+}
+
+class ContactListScreen extends StatelessWidget {
+  const ContactListScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Contact> contacts = [
+      Contact(
+        id: '1',
+        name: '张三',
+        lastMessage: '好的，我们明天讨论项目细节。晚安！',
+        time: '10:42',
+        avatarColor: Colors.blue,
+      ),
+      Contact(
+        id: '2',
+        name: '李四',
+        lastMessage: '项目进展如何？',
+        time: '昨天',
+        avatarColor: Colors.green,
+      ),
+      Contact(
+        id: '3',
+        name: '王五',
+        lastMessage: '发票已经开好了，请查收。',
+        time: '星期一',
+        avatarColor: Colors.orange,
+      ),
+      Contact(
+        id: '4',
+        name: '赵六',
+        lastMessage: '周末去打球吗？',
+        time: '上周',
+        avatarColor: Colors.purple,
+      ),
+    ];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('消息'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      ),
+      body: ListView.builder(
+        itemCount: contacts.length,
+        itemBuilder: (context, index) {
+          final contact = contacts[index];
+          return ListTile(
+            leading: CircleAvatar(
+              backgroundColor: contact.avatarColor,
+              foregroundColor: Colors.white,
+              child: Text(contact.name[0]),
+            ),
+            title: Text(contact.name),
+            subtitle: Text(
+              contact.lastMessage,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            trailing: Text(
+              contact.time,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatScreen(contact: contact),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
@@ -33,32 +125,41 @@ class Message {
 }
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final Contact contact;
+  
+  const ChatScreen({super.key, required this.contact});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final List<Message> _messages = [
-    Message(
-      text: "好的，我们明天讨论项目细节。晚安！",
-      isMe: false,
-      timestamp: DateTime.now().subtract(const Duration(minutes: 1)),
-    ),
-    Message(
-      text: "太棒了！明天见。",
-      isMe: true,
-      timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
-    ),
-    Message(
-      text: "你好！今天我能帮您点什么？",
-      isMe: false,
-      timestamp: DateTime.now().subtract(const Duration(minutes: 10)),
-    ),
-  ];
+  late List<Message> _messages;
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    // 使用联系人的最后一条消息作为对话列表的初始数据
+    _messages = [
+      Message(
+        text: widget.contact.lastMessage,
+        isMe: false,
+        timestamp: DateTime.now().subtract(const Duration(minutes: 1)),
+      ),
+      Message(
+        text: "没问题！",
+        isMe: true,
+        timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
+      ),
+      Message(
+        text: "你好，${widget.contact.name}！",
+        isMe: false,
+        timestamp: DateTime.now().subtract(const Duration(minutes: 10)),
+      ),
+    ];
+  }
 
   void _handleSubmitted(String text) {
     if (text.trim().isEmpty) return;
@@ -75,14 +176,14 @@ class _ChatScreenState extends State<ChatScreen> {
       );
     });
     
-    // Simulate a reply after a short delay
+    // 模拟对方在短暂停顿后的回复
     Future.delayed(const Duration(seconds: 1), () {
       if (mounted) {
         setState(() {
           _messages.insert(
             0,
             Message(
-              text: 'This is an automated reply to: "$text"',
+              text: '${widget.contact.name} 的自动回复: "$text"',
               isMe: false,
               timestamp: DateTime.now(),
             ),
@@ -103,7 +204,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chat'),
+        title: Text(widget.contact.name),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Column(
@@ -140,8 +241,10 @@ class _ChatScreenState extends State<ChatScreen> {
             message.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           if (!message.isMe) ...[
-            const CircleAvatar(
-              child: Text('Bot'),
+            CircleAvatar(
+              backgroundColor: widget.contact.avatarColor,
+              foregroundColor: Colors.white,
+              child: Text(widget.contact.name[0]),
             ),
             const SizedBox(width: 8.0),
           ],
@@ -190,7 +293,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 controller: _textController,
                 onSubmitted: _handleSubmitted,
                 decoration: const InputDecoration.collapsed(
-                  hintText: 'Send a message',
+                  hintText: '发送消息',
                 ),
               ),
             ),
