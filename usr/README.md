@@ -1,16 +1,26 @@
-# couldai_user_app
+# CouldAI Chat App
 
-A new Flutter project.
+A Flutter-based chat application built with CouldAI.
+
+## Features
+
+- **Contact List:** View a list of your contacts with their latest messages and timestamps.
+- **Chat Interface:** Tap a contact to enter a dedicated chat screen with dynamic conversations.
+- **Message Composer:** Send text messages and view incoming "bot" replies. A microphone button is also present (voice functionality coming soon).
+- **Theme Customization:** 
+  - Switch between System, Light, and Dark mode.
+  - Choose from 10 different seed colors (Blue, Green, Purple, Orange, Red, Teal, Pink, Indigo, Amber, Brown) to personalize the app's look and feel.
+
+## Tech Stack
+- Flutter
+- Dart
+- Provider (for state management of themes and app state)
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+1. Ensure you have Flutter installed.
+2. Clone the repository and run `flutter pub get`.
+3. Run `flutter run` to start the app on your preferred emulator or device.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## About CouldAI
+CouldAI is an expert development assistant for Flutter product work, repository implementation, and technical research. Learn more at [https://could.ai](https://could.ai).

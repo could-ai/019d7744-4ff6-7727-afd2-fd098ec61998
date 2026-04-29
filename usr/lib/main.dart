@@ -420,6 +420,10 @@ class SettingsScreen extends StatelessWidget {
               Colors.orange,
               Colors.red,
               Colors.teal,
+              Colors.pink,
+              Colors.indigo,
+              Colors.amber,
+              Colors.brown,
             ].map((color) {
               return GestureDetector(
                 onTap: () => appState.changeSeedColor(color),
