@@ -4,15 +4,52 @@ void main() {
   runApp(const ChatApp());
 }
 
-class ChatApp extends StatelessWidget {
+class ChatApp extends StatefulWidget {
   const ChatApp({super.key});
+
+  static _ChatAppState of(BuildContext context) =>
+      context.findAncestorStateOfType<_ChatAppState>()!;
+
+  @override
+  State<ChatApp> createState() => _ChatAppState();
+}
+
+class _ChatAppState extends State<ChatApp> {
+  ThemeMode _themeMode = ThemeMode.system;
+  Color _seedColor = Colors.blue;
+
+  ThemeMode get themeMode => _themeMode;
+  Color get seedColor => _seedColor;
+
+  void changeThemeMode(ThemeMode mode) {
+    setState(() {
+      _themeMode = mode;
+    });
+  }
+
+  void changeSeedColor(Color color) {
+    setState(() {
+      _seedColor = color;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Chat App',
+      themeMode: _themeMode,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: _seedColor,
+          brightness: Brightness.light,
+        ),
+        useMaterial3: true,
+      ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: _seedColor,
+          brightness: Brightness.dark,
+        ),
         useMaterial3: true,
       ),
       home: const ContactListScreen(),
@@ -76,6 +113,19 @@ class ContactListScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('消息'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingsScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: ListView.builder(
         itemCount: contacts.length,
@@ -306,6 +356,83 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final appState = ChatApp.of(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('主题设置'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      ),
+      body: ListView(
+        children: [
+          ListTile(
+            title: const Text('主题模式'),
+            subtitle: Text(
+              appState.themeMode == ThemeMode.system
+                  ? '跟随系统'
+                  : appState.themeMode == ThemeMode.light
+                      ? '浅色模式'
+                      : '深色模式',
+            ),
+            trailing: DropdownButton<ThemeMode>(
+              value: appState.themeMode,
+              onChanged: (ThemeMode? newValue) {
+                if (newValue != null) {
+                  appState.changeThemeMode(newValue);
+                }
+              },
+              items: const [
+                DropdownMenuItem(value: ThemeMode.system, child: Text('跟随系统')),
+                DropdownMenuItem(value: ThemeMode.light, child: Text('浅色模式')),
+                DropdownMenuItem(value: ThemeMode.dark, child: Text('深色模式')),
+              ],
+            ),
+          ),
+          const Divider(),
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text('主题颜色', style: TextStyle(fontSize: 16)),
+          ),
+          Wrap(
+            spacing: 8.0,
+            runSpacing: 8.0,
+            children: [
+              Colors.blue,
+              Colors.green,
+              Colors.purple,
+              Colors.orange,
+              Colors.red,
+              Colors.teal,
+            ].map((color) {
+              return GestureDetector(
+                onTap: () => appState.changeSeedColor(color),
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  margin: const EdgeInsets.only(left: 16.0),
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                    border: appState.seedColor == color
+                        ? Border.all(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            width: 3)
+                        : null,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }
