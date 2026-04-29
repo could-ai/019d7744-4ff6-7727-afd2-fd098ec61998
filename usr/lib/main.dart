@@ -40,7 +40,23 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final List<Message> _messages = [];
+  final List<Message> _messages = [
+    Message(
+      text: "好的，我们明天讨论项目细节。晚安！",
+      isMe: false,
+      timestamp: DateTime.now().subtract(const Duration(minutes: 1)),
+    ),
+    Message(
+      text: "太棒了！明天见。",
+      isMe: true,
+      timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
+    ),
+    Message(
+      text: "你好！今天我能帮您点什么？",
+      isMe: false,
+      timestamp: DateTime.now().subtract(const Duration(minutes: 10)),
+    ),
+  ];
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
