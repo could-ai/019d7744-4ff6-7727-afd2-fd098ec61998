@@ -338,6 +338,14 @@ class _ChatScreenState extends State<ChatScreen> {
         margin: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Row(
           children: [
+            IconButton(
+              icon: const Icon(Icons.mic),
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('语音功能开发中...')),
+                );
+              },
+            ),
             Flexible(
               child: TextField(
                 controller: _textController,
